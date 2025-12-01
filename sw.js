@@ -1,11 +1,17 @@
-const CACHE_NAME = 'mahjong-score-v16';
+const CACHE_NAME = 'mahjong-score-v17';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './css/style.css',
-    './js/app.js',
-    './js/mahjong.js',
-    './js/storage.js',
+    './js/main.js',
+    './js/core/mahjong.js',
+    './js/core/storage.js',
+    './js/ui/navigation.js',
+    './js/ui/users.js',
+    './js/ui/sessions.js',
+    './js/ui/games.js',
+    './js/ui/settings.js',
+    './js/ui/charts.js',
     './manifest.json',
     'https://cdn.jsdelivr.net/npm/chart.js',
     'https://cdn-icons-png.flaticon.com/512/806/806057.png'
