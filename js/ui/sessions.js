@@ -242,7 +242,8 @@ function renderGameList(session) {
             const r = game.results.find(res => res.index === i);
             const score = r ? r.finalScore.toFixed(1) : '-';
             const cls = r && r.finalScore > 0 ? 'score-positive' : (r && r.finalScore < 0 ? 'score-negative' : '');
-            return `<td class="${cls}">${score} <span style="font-size:0.8em; color:#888;">(${r.rawScore})</span></td>`;
+            const raw = r ? ` <span style="font-size:0.8em; color:#888;">(${r.rawScore})</span>` : '';
+            return `<td class="${cls}">${score}${raw}</td>`;
         }).join('')}
                     </tr>
                 </tbody>

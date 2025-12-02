@@ -21,17 +21,17 @@ export function setupGames() {
         scoreForm.addEventListener('submit', (e) => {
             e.preventDefault();
 
+            // Check if total is valid
             if (!calculateTotal()) {
-                if (!confirm("合計点が100,000点ではありません。続行しますか？")) {
-                    return;
-                }
+                alert('合計点が100,000点になるように入力してください。');
+                return;
             }
 
             const formData = new FormData(scoreForm);
-            const p1Score = Number(formData.get('p1-score'));
-            const p2Score = Number(formData.get('p2-score'));
-            const p3Score = Number(formData.get('p3-score'));
-            const p4Score = Number(formData.get('p4-score'));
+            const p1Score = Number(formData.get('p1-score')) * 100;
+            const p2Score = Number(formData.get('p2-score')) * 100;
+            const p3Score = Number(formData.get('p3-score')) * 100;
+            const p4Score = Number(formData.get('p4-score')) * 100;
 
             const rawScores = [p1Score, p2Score, p3Score, p4Score];
 
@@ -93,7 +93,7 @@ export function prepareInputForm(sessionId, gameToEdit = null) {
         gameToEdit.results.forEach(r => {
             // r.index is 0-3
             const input = document.querySelector(`input[name="p${r.index + 1}-score"]`);
-            if (input) input.value = r.rawScore;
+            if (input) input.value = r.rawScore / 100;
         });
     } else {
         editingGameId = null;
@@ -127,11 +127,12 @@ function calculateTotal() {
 
     const totalCheck = document.getElementById('total-check');
     if (totalCheck) {
-        totalCheck.textContent = `合計: ${total}`;
         if (total === 100000) {
+            totalCheck.textContent = `合計: ${total} / 100000 (OK)`;
             totalCheck.className = 'total-check valid';
             return true;
         } else {
+            totalCheck.textContent = `合計: ${total} / 100000 (NG)`;
             totalCheck.className = 'total-check invalid';
             return false;
         }
@@ -147,12 +148,19 @@ function showTieBreakerModal(tiedGroups, playerNames) {
     tiedGroups.forEach(group => {
         const groupDiv = document.createElement('div');
         groupDiv.style.marginBottom = '15px';
-        groupDiv.innerHTML = `<h4>同点: ${group.map(i => playerNames[i]).join(', ')}</h4>`;
+        groupDiv.innerHTML = `<h4 style="color: var(--primary-color); margin-bottom: 10px;">同点: ${group.map(i => playerNames[i]).join(', ')}</h4>`;
 
         group.forEach(playerIndex => {
             const btn = document.createElement('button');
-            btn.className = 'btn-secondary';
-            btn.style.marginRight = '5px';
+            btn.style.width = '100%';
+            btn.style.padding = '12px';
+            btn.style.marginBottom = '8px';
+            btn.style.backgroundColor = 'var(--surface-color)';
+            btn.style.border = '1px solid var(--primary-color)';
+            btn.style.color = 'var(--primary-color)';
+            btn.style.borderRadius = 'var(--border-radius)';
+            btn.style.cursor = 'pointer';
+            btn.style.fontSize = '1rem';
             btn.textContent = `${playerNames[playerIndex]} を上位にする`;
             btn.onclick = () => resolveTie(group, playerIndex);
             groupDiv.appendChild(btn);
@@ -214,10 +222,8 @@ function finalizeGame(results, playerNames) {
 
     if (editingGameId) {
         updateGameInSession(currentSessionIdForGame, editingGameId, gameData);
-        alert('対局を更新しました');
     } else {
         addGameToSession(currentSessionIdForGame, gameData);
-        alert('対局を保存しました');
     }
 
     openSession(currentSessionIdForGame);

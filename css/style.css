@@ -422,7 +422,7 @@ button.btn-danger {
     border-radius: var(--border-radius);
     max-width: 90%;
     width: 400px;
-    text-align: center;
+    text-align: left;
 }
 
 .modal-content h3 {
