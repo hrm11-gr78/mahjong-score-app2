@@ -276,6 +276,52 @@ function renderUserDetail(userName) {
         }
     }
 
+    // Calculate cumulative amount (収支)
+    let totalAmount = 0;
+    chronological.forEach(session => {
+        const sessionScore = sessionScores.get(session.id);
+        const rate = session.rate || 0;
+        if (rate > 0) {
+            const amount = Math.round(sessionScore * rate * 10);
+            totalAmount += amount;
+        }
+    });
+
+    // Display cumulative amount on the score card
+    let amountElement = document.getElementById('user-total-amount');
+    if (!amountElement) {
+        // Create the element if it doesn't exist
+        const scoreCardContent = scoreCard.querySelector('[style*="z-index: 1"]');
+        if (scoreCardContent) {
+            const amountDiv = document.createElement('div');
+            amountDiv.style.cssText = 'margin-top: 30px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.2);';
+            amountDiv.innerHTML = `
+                <div style="font-size: 1rem; color: #e2e8f0; margin-bottom: 16px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; padding: 8px 20px; border: 2px solid rgba(226, 232, 240, 0.3); border-radius: 20px; display: inline-block;">
+                    累計収支
+                </div>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                    <div style="font-size: 2.5rem; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));">💰</div>
+                    <div style="font-size: 3.5rem; font-weight: 800; line-height: 1; text-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+                        <span id="user-total-amount">-</span>
+                    </div>
+                </div>
+            `;
+            scoreCardContent.appendChild(amountDiv);
+            amountElement = document.getElementById('user-total-amount');
+        }
+    }
+
+    if (amountElement) {
+        if (totalAmount === 0 && chronological.every(s => !s.rate || s.rate === 0)) {
+            amountElement.textContent = '-';
+            amountElement.className = '';
+        } else {
+            const amountStr = totalAmount > 0 ? `+${totalAmount}` : `${totalAmount}`;
+            amountElement.textContent = amountStr;
+            amountElement.className = totalAmount >= 0 ? 'score-positive' : 'score-negative';
+        }
+    }
+
     userHistoryList.innerHTML = html;
 }
 
