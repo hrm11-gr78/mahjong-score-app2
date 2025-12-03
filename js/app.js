@@ -233,11 +233,24 @@ function renderUserDetail(userName) {
             amountHtml = '<td>-</td>';
         }
 
+        // Calculate rank counts for this session
+        const rankCounts = [0, 0, 0, 0];
+        session.games.forEach(game => {
+            const pData = game.players.find(p => p.name === userName);
+            if (pData && pData.rank >= 1 && pData.rank <= 4) {
+                rankCounts[pData.rank - 1]++;
+            }
+        });
+
         html += `
             <tr style="cursor:pointer;" onclick="openSession(${session.id})">
                 <td>${session.date}</td>
                 <td class="${scoreClass}">${scoreStr}</td>
                 ${amountHtml}
+                <td>${rankCounts[0]}</td>
+                <td>${rankCounts[1]}</td>
+                <td>${rankCounts[2]}</td>
+                <td>${rankCounts[3]}</td>
             </tr>
         `;
     });
@@ -443,13 +456,26 @@ function openSession(sessionId) {
 }
 
 function renderSessionTotal(session) {
-    // Calculate totals
+    // Calculate totals and rank counts
     const totals = {};
-    session.players.forEach(p => totals[p] = 0);
+    const rankCounts = {}; // { playerName: [1st, 2nd, 3rd, 4th] }
+
+    session.players.forEach(p => {
+        totals[p] = 0;
+        rankCounts[p] = [0, 0, 0, 0];
+    });
 
     session.games.forEach(game => {
+        // Sort players in this game by rank to ensure correct indexing if needed, 
+        // though game.players usually has rank info.
+        // game.players objects have { name, rank, finalScore, ... }
         game.players.forEach(p => {
-            totals[p.name] += p.finalScore;
+            if (totals[p.name] !== undefined) {
+                totals[p.name] += p.finalScore;
+            }
+            if (rankCounts[p.name] !== undefined && p.rank >= 1 && p.rank <= 4) {
+                rankCounts[p.name][p.rank - 1]++;
+            }
         });
     });
 
@@ -457,7 +483,18 @@ function renderSessionTotal(session) {
     const sortedPlayers = session.players.slice().sort((a, b) => totals[b] - totals[a]);
     const rate = session.rate || 0;
 
-    let html = `<thead><tr><th>順位</th><th>名前</th><th>合計Pt</th>${rate > 0 ? '<th>収支</th>' : ''}</tr></thead><tbody>`;
+    // Build Table Header
+    let html = `<thead><tr>
+        <th>順位</th>
+        <th>名前</th>
+        <th>合計Pt</th>
+        ${rate > 0 ? '<th>収支</th>' : ''}
+        <th style="font-size:0.8em; color:#bb86fc;">1着</th>
+        <th style="font-size:0.8em; color:#03dac6;">2着</th>
+        <th style="font-size:0.8em; color:#cf6679;">3着</th>
+        <th style="font-size:0.8em; color:#ffb74d;">4着</th>
+    </tr></thead><tbody>`;
+
     sortedPlayers.forEach((p, i) => {
         const score = parseFloat(totals[p].toFixed(1));
         const scoreClass = score >= 0 ? 'score-positive' : 'score-negative';
@@ -471,12 +508,23 @@ function renderSessionTotal(session) {
             amountHtml = `<td class="${amountClass}">${amountStr}</td>`;
         }
 
+        // Get rank counts
+        const counts = rankCounts[p];
+        const c1 = counts[0];
+        const c2 = counts[1];
+        const c3 = counts[2];
+        const c4 = counts[3];
+
         html += `
             <tr>
                 <td>${i + 1}</td>
                 <td><span style="cursor:pointer; text-decoration:underline;" onclick="openUserDetail('${p}')">${p}</span></td>
                 <td class="${scoreClass}" style="font-weight:bold;">${scoreStr}</td>
                 ${amountHtml}
+                <td>${c1}</td>
+                <td>${c2}</td>
+                <td>${c3}</td>
+                <td>${c4}</td>
             </tr>
         `;
     });
