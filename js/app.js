@@ -381,19 +381,19 @@ function renderUserDetail(userName) {
         statsElement.innerHTML = `
             <div style="display: flex; justify-content: space-around; width: 100%; max-width: 400px; margin: 0 auto;">
                 <div style="text-align: center;">
-                    <div style="font-size: 0.9rem; color: #bb86fc; margin-bottom: 5px;">1着</div>
+                    <div style="font-size: 0.9rem; margin-bottom: 5px;">1着</div>
                     <div style="font-size: 1.5rem; font-weight: bold;">${totalRankCounts[0]}</div>
                 </div>
                 <div style="text-align: center;">
-                    <div style="font-size: 0.9rem; color: #03dac6; margin-bottom: 5px;">2着</div>
+                    <div style="font-size: 0.9rem; margin-bottom: 5px;">2着</div>
                     <div style="font-size: 1.5rem; font-weight: bold;">${totalRankCounts[1]}</div>
                 </div>
                 <div style="text-align: center;">
-                    <div style="font-size: 0.9rem; color: #cf6679; margin-bottom: 5px;">3着</div>
+                    <div style="font-size: 0.9rem; margin-bottom: 5px;">3着</div>
                     <div style="font-size: 1.5rem; font-weight: bold;">${totalRankCounts[2]}</div>
                 </div>
                 <div style="text-align: center;">
-                    <div style="font-size: 0.9rem; color: #ffb74d; margin-bottom: 5px;">4着</div>
+                    <div style="font-size: 0.9rem margin-bottom: 5px;">4着</div>
                     <div style="font-size: 1.5rem; font-weight: bold;">${totalRankCounts[3]}</div>
                 </div>
             </div>
@@ -558,10 +558,10 @@ function renderSessionTotal(session) {
         <th>名前</th>
         <th>合計Pt</th>
         ${rate > 0 ? '<th>収支</th>' : ''}
-        <th style="font-size:0.8em; color:#bb86fc;">1着</th>
-        <th style="font-size:0.8em; color:#03dac6;">2着</th>
-        <th style="font-size:0.8em; color:#cf6679;">3着</th>
-        <th style="font-size:0.8em; color:#ffb74d;">4着</th>
+        <th style="font-size:0.8em;">1着</th>
+        <th style="font-size:0.8em;">2着</th>
+        <th style="font-size:0.8em;">3着</th>
+        <th style="font-size:0.8em;">4着</th>
     </tr></thead><tbody>`;
 
     sortedPlayers.forEach((p, i) => {
