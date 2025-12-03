@@ -335,6 +335,75 @@ function renderUserDetail(userName) {
         }
     }
 
+    // Calculate total rank counts and average rank
+    const totalRankCounts = [0, 0, 0, 0];
+    let totalGames = 0;
+
+    chronological.forEach(session => {
+        session.games.forEach(game => {
+            const pData = game.players.find(p => p.name === userName);
+            if (pData && pData.rank >= 1 && pData.rank <= 4) {
+                totalRankCounts[pData.rank - 1]++;
+                totalGames++;
+            }
+        });
+    });
+
+    let averageRank = 0;
+    if (totalGames > 0) {
+        const sumRanks = (totalRankCounts[0] * 1) + (totalRankCounts[1] * 2) + (totalRankCounts[2] * 3) + (totalRankCounts[3] * 4);
+        averageRank = (sumRanks / totalGames).toFixed(2);
+    } else {
+        averageRank = '-';
+    }
+
+    // Display rank stats on the score card
+    let statsElement = document.getElementById('user-rank-stats');
+    if (!statsElement) {
+        const scoreCardContent = scoreCard.querySelector('[style*="z-index: 1"]');
+        if (scoreCardContent) {
+            const statsDiv = document.createElement('div');
+            statsDiv.style.cssText = 'margin-top: 30px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.2);';
+            statsDiv.innerHTML = `
+                <div style="font-size: 1rem; color: #e2e8f0; margin-bottom: 16px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; padding: 8px 20px; border: 2px solid rgba(226, 232, 240, 0.3); border-radius: 20px; display: inline-block;">
+                    成績詳細
+                </div>
+                <div id="user-rank-stats" style="display: flex; flex-direction: column; gap: 15px; color: #fff;">
+                    <!-- Stats injected here -->
+                </div>
+            `;
+            scoreCardContent.appendChild(statsDiv);
+            statsElement = document.getElementById('user-rank-stats');
+        }
+    }
+
+    if (statsElement) {
+        statsElement.innerHTML = `
+            <div style="display: flex; justify-content: space-around; width: 100%; max-width: 400px; margin: 0 auto;">
+                <div style="text-align: center;">
+                    <div style="font-size: 0.9rem; color: #bb86fc; margin-bottom: 5px;">1着</div>
+                    <div style="font-size: 1.5rem; font-weight: bold;">${totalRankCounts[0]}</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 0.9rem; color: #03dac6; margin-bottom: 5px;">2着</div>
+                    <div style="font-size: 1.5rem; font-weight: bold;">${totalRankCounts[1]}</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 0.9rem; color: #cf6679; margin-bottom: 5px;">3着</div>
+                    <div style="font-size: 1.5rem; font-weight: bold;">${totalRankCounts[2]}</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 0.9rem; color: #ffb74d; margin-bottom: 5px;">4着</div>
+                    <div style="font-size: 1.5rem; font-weight: bold;">${totalRankCounts[3]}</div>
+                </div>
+            </div>
+            <div style="margin-top: 15px; font-size: 1.2rem;">
+                <span style="color: #e2e8f0; margin-right: 10px;">平均順位:</span>
+                <span style="font-weight: 800; font-size: 1.8rem;">${averageRank}</span>
+            </div>
+        `;
+    }
+
     userHistoryList.innerHTML = html;
 }
 
