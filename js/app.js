@@ -1241,11 +1241,27 @@ if (spinBtn) {
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
-                // Determine result
+                // Determine result - Calculate which segment the arrow (at top) is pointing to
                 const normalizedRotation = (currentRotation % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
-                // Arrow points to top, so we calculate which segment is at the top
                 const anglePerSegment = (2 * Math.PI) / rouletteItems.length;
-                const winningIndex = Math.floor(((Math.PI * 2 - normalizedRotation) + anglePerSegment / 2) / anglePerSegment) % rouletteItems.length;
+
+                // The arrow is at the top (-π/2 radians from the right/0)
+                // In drawing: segment i starts at (rotation + i * anglePerSegment)
+                // We need to find which segment contains the arrow position
+                const arrowPosition = -Math.PI / 2; // Top of circle
+
+                // Which segment is under the arrow?
+                // The arrow points at arrowPosition in absolute coordinates
+                // Segments are drawn starting at normalizedRotation + i * anglePerSegment
+                // We need: normalizedRotation + i * anglePerSegment <= arrowPosition < normalizedRotation + (i+1) * anglePerSegment
+
+                // Solve for i: (arrowPosition - normalizedRotation) / anglePerSegment
+                let segmentIndexFloat = (arrowPosition - normalizedRotation) / anglePerSegment;
+
+                // Normalize to positive
+                while (segmentIndexFloat < 0) segmentIndexFloat += rouletteItems.length;
+
+                const winningIndex = Math.floor(segmentIndexFloat) % rouletteItems.length;
 
                 // Play result sound
                 playResultSound();
